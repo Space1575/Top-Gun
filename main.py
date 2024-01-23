@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import math
 import sys
 import os
 pygame.font.init()
@@ -15,15 +16,17 @@ pygame.display.set_caption("Top Gun")
 
 Height = 80
 Width = 80
+WIN = False
 
-
-
-
-FPS = 60
+FPS = 90
 
 PlaneX = 200
 PlaneY = H - 90
+"""
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)"""
 
+falling_piece_count = 0
 F = pygame.font.SysFont('comicsans',40)
 
 FONT = pygame.font.SysFont('comicsans',30)
@@ -37,10 +40,11 @@ sky1 =  pygame.image.load(os.path.join('Assets','sky.jpg'))
 sky1_1 = pygame.transform.scale(sky1,(W,H))#sky backg 1
 skyx,skyy = 0,0
 
-scroll = 0#in progress
+hit = False
+scroll = 0
 
-gameover1 = pygame.image.load(os.path.join('Assets','123.png'))
-gameover = pygame.transform.scale(gameover1,(200,100))
+gameover1 = pygame.image.load(os.path.join('Assets','123.png')).convert_alpha()
+gameover = pygame.transform.scale(gameover1,(450,100))
 
 
 win = pygame.image.load(os.path.join('Assets','win.png'))
@@ -79,15 +83,13 @@ tile = H / sky_width
 obstacle = pygame.Rect(0,0,W,70)
 
 
-    
-mask_1 = pygame.mask.from_surface(player)
-mask = mask_1.to_surface().convert_alpha()
+
 
 bullet = pygame.Rect(box.x,box.y,2,5)
 bullet.x,bullet.y = box.x,box.y
 #-------------------------------------------------------------
 def Player_costume(escalape,):
-    global player,move,level,S,mask
+    global player,move,level,S,WIN
     if round(escalape) >=6 and round(escalape) < 60:
         Text("Level 1",F)
         S =random.randint(2,6)
@@ -121,6 +123,8 @@ def Player_costume(escalape,):
     elif round(escalape) >=255 and round(escalape) < 258:
         Text("You won!!",FONT)
         level = 6    
+    elif level == 6:
+        WIN = True
 #----------------------------------------------
 def Movement():
     global plane_x,plane_y
@@ -153,7 +157,6 @@ def drawing(box,T,escalape,obj):
 
     for objec in obj:
         pygame.draw.rect(screen,(196, 164, 132),objec)
-    
     img2 = FONT.render(f"HP:{round(Health)}", 1, (0,0,0))
     screen.blit(img2,(480,10))
 
@@ -169,6 +172,7 @@ def drawing(box,T,escalape,obj):
             Text1("Use arrows keys to move. ",F)
     elif escalape >4 and escalape <= 5:
             Text1("",F)
+
 
 def Text(T,F,):
     img = F.render(T, 1, (0,0,0))
@@ -190,14 +194,14 @@ def main():  #main game loop
     
     screen = pygame.display.set_mode((W,H))
     pygame.display.set_caption("Top Gun")
-
+    hit = False
     run = True
     while run: 
         escalape=time.time()-start_time
         falling_piece_count += clock.tick(FPS)
         pause = random.randint(1000,2000)
 
-        if escalape >= 6:
+        if escalape >= 6 and WIN != True:
             if falling_piece_count > pause:
                 for _ in range(S):
                     object_y = -20
@@ -224,11 +228,17 @@ def main():  #main game loop
 
         if Health <= 0:
             Health = 0
-            screen.blit(gameover,(0-200,H//2))
+
+            screen.blit(gameover,(80,100 ))
+            pygame.display.update()
             hit = True
+        
+        if WIN:
+            screen.blit()
 
         if hit:
-            pygame.delay(4000)    
+            pygame.time.delay(2000)
+            break
                 
         drawing(box,T,escalape,obj)
         Player_costume(escalape)
