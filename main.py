@@ -1,7 +1,6 @@
 import pygame
 import random
 import time
-import math
 import sys
 import os
 pygame.font.init()
@@ -20,29 +19,25 @@ Width = 80
 
 
 
-FPS = 90
+FPS = 60
 
 PlaneX = 200
 PlaneY = H - 90
-"""
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)"""
 
-falling_piece_count = 0
 F = pygame.font.SysFont('comicsans',40)
 
 FONT = pygame.font.SysFont('comicsans',30)
 #--------
 T = ""
 level = 1
-Health = 10
+Health = 20
 
 #sky backgr images
 sky1 =  pygame.image.load(os.path.join('Assets','sky.jpg'))
 sky1_1 = pygame.transform.scale(sky1,(W,H))#sky backg 1
 skyx,skyy = 0,0
 
-scroll = 0
+scroll = 0#in progress
 
 gameover1 = pygame.image.load(os.path.join('Assets','123.png'))
 gameover = pygame.transform.scale(gameover1,(200,100))
@@ -228,9 +223,12 @@ def main():  #main game loop
                 obj.remove(objec)
 
         if Health <= 0:
+            Health = 0
             screen.blit(gameover,(0-200,H//2))
+            hit = True
 
-            
+        if hit:
+            pygame.delay(4000)    
                 
         drawing(box,T,escalape,obj)
         Player_costume(escalape)
