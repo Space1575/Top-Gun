@@ -1,7 +1,6 @@
 import pygame
 import random
 import time
-import math
 import sys
 import os
 pygame.font.init()
@@ -39,6 +38,7 @@ Health = 20
 sky1 =  pygame.image.load(os.path.join('Assets','sky.jpg'))
 sky1_1 = pygame.transform.scale(sky1,(W,H))#sky backg 1
 skyx,skyy = 0,0
+
 
 hit = False
 scroll = 0
@@ -78,15 +78,10 @@ box = pygame.Rect(PlaneX+15,PlaneY+2,Width-30,Height-15)
 move = 2#moving
 Border = pygame.Rect(0,H-10,W,10)
 sky = sky1_1 #making sky background
-sky_width = sky.get_height()
-tile = H / sky_width
-obstacle = pygame.Rect(0,0,W,70)
+obstacle = pygame.Rect(0,0,W,60)
+bg = pygame.Rect(0,0,W,H)
+objectile2 = pygame.Rect(0,0,W,60)
 
-
-
-
-bullet = pygame.Rect(box.x,box.y,2,5)
-bullet.x,bullet.y = box.x,box.y
 #-------------------------------------------------------------
 def Player_costume(escalape,):
     global player,move,level,S,WIN
@@ -135,7 +130,7 @@ def Movement():
     if key[pygame.K_RIGHT or pygame.K_d] and plane_x < 536:
         plane_x += move
         box.x += move
-    if key[pygame.K_UP ] and plane_y > obstacle.y + 70:
+    if key[pygame.K_UP ] and plane_y > obstacle.y + 59:
         plane_y -= move
         box.y -= move
     if key[pygame.K_DOWN or pygame.K_s] and plane_y < Border.y -60:
@@ -144,19 +139,30 @@ def Movement():
 
     return  plane_x,plane_y
 
+BG = []
 
 def drawing(box,T,escalape,obj):
+    global scroll
     screen.fill((0,180,230))
 
-    screen.blit(sky,(0,0))
+    for _ in range(3):
+        screen.blit(sky,(0,_*-H+scroll))
     
-    if Health <= 0:
-        screen.blit(gameover,(200,400))
+    scroll += move
+
+    if scroll > H:
+        scroll = 0
+    for objec in obj:
+        pygame.draw.rect(screen,(0,0,0),objec)
+    pygame.draw.rect(screen,(255,255,240),objectile2)
+    
     pygame.draw.rect(screen,(0,0,0),Border)
+
     pygame.draw.rect(screen,(0,0,0),obstacle,5)
 
-    for objec in obj:
-        pygame.draw.rect(screen,(196, 164, 132),objec)
+
+    
+    
     img2 = FONT.render(f"HP:{round(Health)}", 1, (0,0,0))
     screen.blit(img2,(480,10))
 
@@ -164,6 +170,7 @@ def drawing(box,T,escalape,obj):
 
     TEXT_TIME = FONT.render(f"Time: {round(escalape)}s",1,"black")
     screen.blit(TEXT_TIME,(2,10))
+    
     screen.blit(player,(plane_x,plane_y))
 
     if escalape > 0 and escalape <= 2:
@@ -181,7 +188,7 @@ def Text(T,F,):
 
 def Text1(Tex,F,):
     img1 = F.render(Tex, 1, (0,0,0))
-    screen.blit(img1,(20,100))
+    screen.blit(img1,(50,100))
 obj = []
 
 def main():  #main game loop
@@ -201,10 +208,12 @@ def main():  #main game loop
         falling_piece_count += clock.tick(FPS)
         pause = random.randint(1000,2000)
 
+
+
         if escalape >= 6 and WIN != True:
             if falling_piece_count > pause:
                 for _ in range(S):
-                    object_y = -20
+                    object_y = 2
                     object_x = random.randint(0,W-20)
                     objec = pygame.Rect(object_x,object_y,20,20)
                     obj.append(objec)
@@ -219,7 +228,7 @@ def main():  #main game loop
                 pygame.quit() 
                 sys.exit()
         for objec in obj[:]:
-            objec.y += 2.4
+            objec.y += 2.9
             if objec.y >= H - 30:
                 obj.remove(objec)
             if objec.colliderect(box):
@@ -228,7 +237,7 @@ def main():  #main game loop
 
         if Health <= 0:
             Health = 0
-
+            obj.clear()
             screen.blit(gameover,(80,100 ))
             pygame.display.update()
             hit = True
@@ -239,7 +248,9 @@ def main():  #main game loop
         if hit:
             pygame.time.delay(2000)
             break
-                
+        
+        bg.y += move
+
         drawing(box,T,escalape,obj)
         Player_costume(escalape)
         
