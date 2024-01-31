@@ -21,9 +21,6 @@ FPS = 90
 
 PlaneX = 200
 PlaneY = H - 90
-"""
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)"""
 
 falling_piece_count = 0
 F = pygame.font.SysFont('comicsans',40)
@@ -138,8 +135,6 @@ def Movement():
         box.y += move
 
     return  plane_x,plane_y
-
-BG = []
 
 def drawing(box,T,escalape,obj):
     global scroll
